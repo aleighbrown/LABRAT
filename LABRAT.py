@@ -252,7 +252,7 @@ def makeTFfasta(gff, genomefasta, lasttwoexons, librarytype, tfoutfolder):
 	gff_fn = gff
 	db_fn = os.path.abspath(gff_fn) + '.db'
 
-	if db_fn.is_file():
+	if os.path.exists(db_fn):
 		print(f"DB file already exists at {db_fn}")
 		os._exit(1)
 
