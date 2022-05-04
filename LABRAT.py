@@ -244,7 +244,7 @@ def getpositionfactors(gff, lengthfilter):
 
 
 #Make a fasta file containing the "terminal fragments" of all transcripts
-def makeTFfasta(gff, genomefasta, lasttwoexons, librarytype):
+def makeTFfasta(gff, genomefasta, lasttwoexons, librarytype, tfoutfolder):
 	TFs = {} #{transcriptid: [chrm, strand, [next to last exon1start, next to last exon1stop], [last exon2start, last exon2stop]]}
 	
 	#Make gff database
@@ -303,7 +303,8 @@ def makeTFfasta(gff, genomefasta, lasttwoexons, librarytype):
 	
 	#Get sequences of TFs
 	if lasttwoexons:
-		with open('TFseqs.fasta', 'w') as outfh:
+		tfseq_fastafolder = os.path.join(tfoutfolder,'TFseqs.fasta')
+		with open(tfseq_fastafolder, 'w') as outfh:
 			for TF in TFs:
 				chrm, strand, exon1, exon2 = TFs[TF]
 				if strand == '+':
@@ -327,7 +328,8 @@ def makeTFfasta(gff, genomefasta, lasttwoexons, librarytype):
 
 	#Get sequences of all exons
 	elif not lasttwoexons:
-		with open('wholetranscriptseqs.fasta', 'w') as outfh:
+		tfseq_fastafolder = os.path.join(tfoutfolder,'wholetranscriptseqs.fasta')
+		with open(tfseq_fastafolder, 'w') as outfh:
 			for TF in TFs:
 				chrm, strand = TFs[TF][0], TFs[TF][1]
 				exons = TFs[TF][2:]
@@ -852,6 +854,7 @@ if __name__ == '__main__':
 	parser.add_argument('--librarytype', type = str, choices = ['RNAseq', '3pseq'], help = 'Is this RNAseq data or 3\' seq data? Needed for makeTFfasta and calculatepsi.')
 	parser.add_argument('--gff', type = str, help = 'GFF of transcript annotation. Needed for makeTFfasta and calculatepsi.')
 	parser.add_argument('--genomefasta', type = str, help = 'Genome sequence in fasta format. Needed for makeTFfasta.')
+	parser.add_argument('--txoutput', type = str, help = 'Optional output folder for makeTFfasta. Default: current working directory', default=os.getcwd())
 	parser.add_argument('--lasttwoexons', action = 'store_true', help = 'Used for makeTFfasta. Do you want to only use the last two exons?')
 	parser.add_argument('--txfasta', type = str, help = 'Fasta file of sequences to quantitate with salmon. Often the output of makeTFfasta mode.')
 	parser.add_argument('--reads1', type = str, help = 'Comma separated list of forward read fastq files. Needed for runSalmon.')
@@ -869,7 +872,7 @@ if __name__ == '__main__':
 		if not args.gff or not args.genomefasta or not args.librarytype:
 			print('You have not supplied all the required arguments! See the --help for more info.')
 			sys.exit()
-		makeTFfasta(args.gff, args.genomefasta, args.lasttwoexons, args.librarytype)
+		makeTFfasta(args.gff, args.genomefasta, args.lasttwoexons, args.librarytype, args.txoutput)
 
 	elif args.mode == 'runSalmon':
 		if not args.txfasta or not args.reads1 or not args.samplename or not args.threads:
