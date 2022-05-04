@@ -253,7 +253,8 @@ def makeTFfasta(gff, genomefasta, lasttwoexons, librarytype, tfoutfolder):
 	db_fn = os.path.abspath(gff_fn) + '.db'
 	if os.path.isfile(db_fn) == False:
 		gffutils.create_db(gff_fn, db_fn, merge_strategy = 'merge', verbose = True)
-
+	print(db_fn)
+	print("this is my debug error spot...")
 	db = gffutils.FeatureDB(db_fn)
 	print('Done indexing!')
 
@@ -867,10 +868,7 @@ if __name__ == '__main__':
 	parser.add_argument('--conditionB', type = str, help = 'Condition B. deltapsi will be calculated as B-A. Must be a value in the \'condition\' column of the sampconds file.')
 	args = parser.parse_args()
 
-	print("HI AL")
-	print(f'here is {args.txoutput}')
-	print('Heres the cwd')
-	print(os.getcwd())
+
 	if args.mode == 'makeTFfasta':
 		if not args.gff or not args.genomefasta or not args.librarytype:
 			print('You have not supplied all the required arguments! See the --help for more info.')
