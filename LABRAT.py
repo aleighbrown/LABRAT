@@ -251,10 +251,14 @@ def makeTFfasta(gff, genomefasta, lasttwoexons, librarytype, tfoutfolder):
 	print('Indexing gff...')
 	gff_fn = gff
 	db_fn = os.path.abspath(gff_fn) + '.db'
+
+	if db_fn.is_file():
+		print(f"DB file already exists at {db_fn}")
+		os._exit(1)
+
 	if os.path.isfile(db_fn) == False:
 		gffutils.create_db(gff_fn, db_fn, merge_strategy = 'merge', verbose = True)
-	print(db_fn)
-	print("this is my debug error spot...")
+
 	db = gffutils.FeatureDB(db_fn)
 	print('Done indexing!')
 
